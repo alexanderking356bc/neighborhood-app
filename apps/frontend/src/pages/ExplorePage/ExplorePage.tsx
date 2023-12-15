@@ -9,7 +9,11 @@ export async function loader() {
 }
 
 export default function ExplorePage() {
-  const neighborhoods = useLoaderData() as Neighborhood[];
+  const neighborhoodsData = useLoaderData() as {neighborhoods: Neighborhood[], currentCursor: number};
+
+  const {neighborhoods, currentCursor} = neighborhoodsData;
+
+  console.log(currentCursor)
 
   // const neighborhoodList = neighborhoods.map(neighborhood => (
   //   <li key={neighborhood.id}>{neighborhood.name}</li>
