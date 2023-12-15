@@ -7,41 +7,21 @@ import { getStoredUser } from '../utils/auth';
 const BASE_URL = '/api/neighborhoods';
 
 async function getAllNeighborhoods(): Promise<Neighborhood[]> {
-  const user = getStoredUser();
-  const headers = { authorization: '' };
-
-  if (user) {
-    headers.authorization = `Bearer ${user.token}`;
-  }
-
-  const response = await axios.get(BASE_URL, { headers });
-  return response.data;
-}
-
-async function getNeighborhoodsPerPage(
-  limit: string,
-  cursor?: string | null,
-): Promise<{ neighborhoods: Neighborhood[]; hasNextPage: boolean }> {
-  const user = getStoredUser();
-  const headers = { authorization: '' };
-
-  if (user) headers.authorization = `Bearer ${user.token}`;
-  if (cursor === null) cursor = undefined;
-
-  const response = await axios.get(`${BASE_URL}?cursor=${cursor}&limit=${limit}`, { headers });
-
+  const response = await axios.get(BASE_URL);
   return response.data;
 }
 
 // TODO: If unable to login because of token invalid or otherwise
 // throw Error
-async function getSingleNeighborhood(id: number): Promise<NeighborhoodType | null> {
+async function getSingleNeighborhood(
+  id: number,
+): Promise<NeighborhoodType | null> {
   const userDataInLocalStorage = getStoredUser();
 
   if (userDataInLocalStorage) {
     const headers = { authorization: `Bearer ${userDataInLocalStorage.token}` };
     const response = await axios.get(`${BASE_URL}/${id}`, { headers });
-
+    
     return response.data;
   }
 
@@ -56,8 +36,8 @@ async function deleteNeighborhood(
 
   const headers = { authorization: `Bearer ${user.token}` };
   await axios.delete(`${BASE_URL}/${id}`, { headers });
-
-  return redirect('/');
+    
+  return redirect('/')
 }
 
 async function createNeighborhood(
@@ -111,11 +91,10 @@ async function editNeighborhood(
 
 export default {
   getAllNeighborhoods,
-  getNeighborhoodsPerPage,
   getSingleNeighborhood,
   deleteNeighborhood,
   connectUserToNeighborhood,
   leaveNeighborhood,
   editNeighborhood,
-  createNeighborhood,
+  createNeighborhood
 };

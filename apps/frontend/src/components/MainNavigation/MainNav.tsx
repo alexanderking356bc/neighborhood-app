@@ -23,7 +23,7 @@ const MainNav = () => {
   );
 
   const homeIconLink = (
-    <Link to={'/'} title='Home'>
+    <Link to={'/'}>
     <div className={styles.link}>
       <FontAwesomeIcon
         className={`${styles.navIcon} ${styles.homeIcon}`}
@@ -34,7 +34,7 @@ const MainNav = () => {
   );
 
   const exploreIconLink = (
-    <Link to={'/explore'} title='Explore neighborhoods'>
+    <Link to={'/explore'}>
       <div className={styles.link}>
         <FontAwesomeIcon
           className={`${styles.compassIcon} ${styles.navIcon}`}
@@ -44,7 +44,7 @@ const MainNav = () => {
   );
 
   const notificationsIconLink = (
-    <div className={styles.link} title='Notifications'>
+    <div className={styles.link}>
       <FontAwesomeIcon
         icon={faBell}
         className={`${styles.navIcon} ${styles.bellIcon}`}></FontAwesomeIcon>

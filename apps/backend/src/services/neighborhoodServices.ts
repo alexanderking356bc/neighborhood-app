@@ -1,10 +1,8 @@
 import { Neighborhood, Request, Response } from '@prisma/client';
 import prismaClient from '../../prismaClient';
 import {
-  NeighborhoodWithRelatedFields,
-  CreateNeighborhoodData,
-  NeighborhoodDetailsForNonMembers,
-  NeighborhoodDetailsForMembers,
+  NeighborhoodWithRelatedFields, CreateNeighborhoodData,
+  NeighborhoodDetailsForNonMembers, NeighborhoodDetailsForMembers,
 } from '../types';
 
 // helpers
@@ -45,54 +43,6 @@ const getAllNeighborhoods = async (): Promise<Array<Neighborhood>> => {
 };
 
 /**
- * @param limit - dictates how many neighborhoods to fetch
- * @param lastCursor - the id of the last-displayed neighborhood from the previous batch
- * @returns the requested neighborhoods & a boolean indicating whether there is a next page
- */
-const getNeighborhoodsPerPage = async (
-  limit?: number,
-  lastCursor?: number,
-): Promise<{ neighborhoods: Neighborhood[]; hasNextPage: boolean }> => {
-  let skip = 1;
-  let neighborhoods = [];
-  if (typeof lastCursor !== 'number') {
-    
-    const firstNhood = await prismaClient.neighborhood.findFirst({});
-    if (firstNhood !== null) [lastCursor, skip] = [firstNhood.id, 0];
-    console.log("first fetch", lastCursor);
-  } 
-  
-  neighborhoods = await prismaClient.neighborhood.findMany({
-    skip, // skip the "cursor"
-    take: limit,
-    cursor: {
-      id: lastCursor,
-    },
-  });
-
-  if (neighborhoods.length === 0) return { neighborhoods: [], hasNextPage: false };
-
-  const newCursor = neighborhoods[neighborhoods.length - 1].id;
-  const nextPageNhoods = await prismaClient.neighborhood.findMany({
-    skip: 1, // skip the "cursor"
-    take: limit,
-    cursor: {
-      id: newCursor,
-    },
-  });
-
-  console.log({
-    currentBatch: neighborhoods.length,
-    hasNextPage: nextPageNhoods.length
-  });
-  
-
-  const hasNextPage = nextPageNhoods.length > 0;
-
-  return { neighborhoods, hasNextPage };
-};
-
-/**
  * checks if the user is part of neighborhood
  * user and neighborhood are found by their respective ids
  * throws error if neighborhood id is invalid
@@ -104,8 +54,8 @@ const isUserMemberOfNeighborhood = async (
   loggedUserID: number,
   neighborhoodID: number,
 ): Promise<boolean> => {
-  const neighborhood: NeighborhoodWithRelatedFields | null =
-    await prismaClient.neighborhood.findUnique({
+  const neighborhood: NeighborhoodWithRelatedFields | null = await prismaClient
+    .neighborhood.findUnique({
       where: {
         id: neighborhoodID,
       },
@@ -116,7 +66,7 @@ const isUserMemberOfNeighborhood = async (
     });
 
   if (neighborhood) {
-    const userIdsAssociatedWithNeighborhood = neighborhood.users.map((user) => user.id);
+    const userIdsAssociatedWithNeighborhood = neighborhood.users.map(user => user.id);
     return userIdsAssociatedWithNeighborhood.includes(loggedUserID);
   }
 
@@ -132,9 +82,8 @@ const isUserMemberOfNeighborhood = async (
  * @param neighborhoodId
  * @returns Promise resolving to neighborhood details without admin_id
  */
-const getNeighborhoodDetailsForNonMembers = async (
-  neighborhoodId: number,
-): Promise<NeighborhoodDetailsForNonMembers> => {
+const getNeighborhoodDetailsForNonMembers = async (neighborhoodId: number)
+: Promise<NeighborhoodDetailsForNonMembers> => {
   const FIELDS_TO_SELECT_FOR_NON_MEMBERS = {
     id: true,
     name: true,
@@ -142,8 +91,8 @@ const getNeighborhoodDetailsForNonMembers = async (
     location: true,
   };
 
-  const neighborhood: NeighborhoodDetailsForNonMembers =
-    await prismaClient.neighborhood.findUniqueOrThrow({
+  const neighborhood: NeighborhoodDetailsForNonMembers = await prismaClient
+    .neighborhood.findUniqueOrThrow({
       where: {
         id: neighborhoodId,
       },
@@ -159,9 +108,8 @@ const getNeighborhoodDetailsForNonMembers = async (
  * @param neighborhoodId
  * @returns neighborhood details with admin, users and requests
  */
-const getNeighborhoodDetailsForMembers = async (
-  neighborhoodId: number,
-): Promise<NeighborhoodDetailsForMembers> => {
+const getNeighborhoodDetailsForMembers = async (neighborhoodId: number)
+: Promise<NeighborhoodDetailsForMembers> => {
   const FIELDS_TO_INCLUDE_FOR_MEMBERS = {
     admin: true,
     users: true,
@@ -177,20 +125,20 @@ const getNeighborhoodDetailsForMembers = async (
     },
   };
 
-  const neighborhood: NeighborhoodDetailsForMembers =
-    await prismaClient.neighborhood.findUniqueOrThrow({
+  const neighborhood: NeighborhoodDetailsForMembers = await prismaClient
+    .neighborhood.findUniqueOrThrow({
       where: {
         id: neighborhoodId,
       },
       include: FIELDS_TO_INCLUDE_FOR_MEMBERS,
     });
-
+  
   return neighborhood;
 };
 
 const getNeighborhoodRequests = async (nhoodId: number): Promise<Request[]> => {
-  const neighborhood: NeighborhoodWithRelatedFields | null =
-    await prismaClient.neighborhood.findUnique({
+  const neighborhood: NeighborhoodWithRelatedFields | null = await prismaClient
+    .neighborhood.findUnique({
       where: {
         id: nhoodId,
       },
@@ -216,7 +164,7 @@ const getNeighborhoodRequests = async (nhoodId: number): Promise<Request[]> => {
  */
 const getNeighborhoodResponses = async (neighborhoodId: number): Promise<Response[]> => {
   const neighborhoodReqs = await getNeighborhoodRequests(neighborhoodId);
-  const requestsIds = neighborhoodReqs.map((req) => req.id);
+  const requestsIds = neighborhoodReqs.map(req => req.id);
   const responses: Response[] | null = await prismaClient.response.findMany({
     where: {
       request_id: { in: requestsIds },
@@ -233,17 +181,15 @@ const getNeighborhoodResponses = async (neighborhoodId: number): Promise<Respons
  * @param neighborhoodId
  * @returns true if user is admin, false otherwise
  */
-const isUserAdminOfNeighborhood = async (
-  userId: number,
-  neighborhoodId: number,
-): Promise<boolean> => {
+const isUserAdminOfNeighborhood = async (userId: number, neighborhoodId: number):
+Promise<boolean> => {
   const neighborhood: Neighborhood = await prismaClient.neighborhood.findFirstOrThrow({
     where: {
       id: neighborhoodId,
     },
   });
 
-  return neighborhood.admin_id === userId;
+  return (neighborhood.admin_id === userId);
 };
 
 const deleteNeighborhood = async (neighborhoodId: number) => {
@@ -267,18 +213,13 @@ const parseCreateNeighborhoodData = async (object: unknown): Promise<CreateNeigh
     throw error;
   }
 
-  if (
-    'admin_id' in object &&
-    typeof object.admin_id === 'number' &&
-    'name' in object &&
-    typeof object.name === 'string' &&
-    'description' in object &&
-    typeof object.description === 'string'
-  ) {
+  if ('admin_id' in object && typeof object.admin_id === 'number'
+    && 'name' in object && typeof object.name === 'string'
+    && 'description' in object && typeof object.description === 'string') {
     const neighborhoodData: CreateNeighborhoodData = {
       admin_id: object.admin_id,
       name: object.name,
-      description: object.description,
+      description: object.description
     };
 
     return neighborhoodData;
@@ -297,12 +238,10 @@ const parseCreateNeighborhoodData = async (object: unknown): Promise<CreateNeigh
  * @param neighborhoodId
  */
 const connectUserToNeighborhood = async (userId: number, neighborhoodId: number): Promise<void> => {
-  const userWithNeighborhood = await prismaClient.user.findUniqueOrThrow({
-    where: { id: userId },
-    include: { neighborhoods: true },
-  });
+  const userWithNeighborhood = await prismaClient.user
+    .findUniqueOrThrow({ where: { id: userId }, include: { neighborhoods: true } });
 
-  const usersNeighborhoodsIds: Array<number> = userWithNeighborhood.neighborhoods.map((n) => n.id);
+  const usersNeighborhoodsIds: Array<number> = userWithNeighborhood.neighborhoods.map(n => n.id);
 
   if (usersNeighborhoodsIds.includes(neighborhoodId)) {
     const error = new Error('User already associated with Neighborhood');
@@ -332,12 +271,13 @@ const removeUserFromNeighborhood = async (
   userId: number,
   neighborhoodId: number,
 ): Promise<void> => {
-  const neighborhood = await prismaClient.neighborhood.findUniqueOrThrow({
-    where: { id: neighborhoodId },
-    include: { users: true, requests: true },
-  });
+  const neighborhood = await prismaClient.neighborhood
+    .findUniqueOrThrow({
+      where: { id: neighborhoodId },
+      include: { users: true, requests: true },
+    });
 
-  const userIsMemberOfNeighborhood = neighborhood.users.some((user) => user.id === userId);
+  const userIsMemberOfNeighborhood = neighborhood.users.some(user => user.id === userId);
   const userIsNeighborhoodAdmin = neighborhood.admin_id === userId;
 
   if (!userIsMemberOfNeighborhood) {
@@ -351,13 +291,11 @@ const removeUserFromNeighborhood = async (
     return;
   }
 
-  const userRequestsInNeighborhood = neighborhood.requests.filter((req) => req.user_id === userId);
-  const requestsIds = userRequestsInNeighborhood.map((req) => req.id);
+  const userRequestsInNeighborhood = neighborhood.requests.filter(req => req.user_id === userId);
+  const requestsIds = userRequestsInNeighborhood.map(req => req.id);
   const responsesInNeighborhood = await getNeighborhoodResponses(neighborhoodId);
-  const userResponsesInNeighborhood = responsesInNeighborhood.filter(
-    (res) => res.user_id === userId,
-  );
-  const responsesIds = userResponsesInNeighborhood.map((res) => res.id);
+  const userResponsesInNeighborhood = responsesInNeighborhood.filter(res => res.user_id === userId);
+  const responsesIds = userResponsesInNeighborhood.map(res => res.id);
 
   // remove user and mark associated requests as "inactive"
   await prismaClient.neighborhood.update({
@@ -406,7 +344,9 @@ const createNeighborhood = async (data: CreateNeighborhoodData): Promise<Neighbo
     error.name = 'InvalidInputError';
     throw error;
   } else {
-    const newNeighborhood: Neighborhood = await prismaClient.neighborhood.create({ data });
+    const newNeighborhood: Neighborhood = await prismaClient
+      .neighborhood
+      .create({ data });
 
     return newNeighborhood;
   }
@@ -414,7 +354,6 @@ const createNeighborhood = async (data: CreateNeighborhoodData): Promise<Neighbo
 
 export default {
   getAllNeighborhoods,
-  getNeighborhoodsPerPage,
   isUserMemberOfNeighborhood,
   getNeighborhoodDetailsForNonMembers,
   getNeighborhoodDetailsForMembers,

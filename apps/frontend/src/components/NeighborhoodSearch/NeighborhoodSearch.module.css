@@ -33,20 +33,6 @@
   text-align: center;
 }
 
-
-.plusIcon:hover {
-  animation: rotate 1.2s;
-}
-
-@keyframes rotate {
-  0% {
-    transform:rotate(0)
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
 @media (max-width: 576px) {
   .searchBox {
     padding: 0 30px;
@@ -57,6 +43,7 @@
   }
 
   .searchCol {
+    /* margin-left: 4vw; */
     position: static;
   }
 }
