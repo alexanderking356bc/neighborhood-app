@@ -12,8 +12,8 @@ export async function loader({ params }: LoaderFunctionArgs) {
 
 export default function ExplorePage() {
   const neighborhoodsData = useLoaderData() as {neighborhoods: Neighborhood[], currentCursor: number};
-  const fetcher = useFetcher();
-  fetcher.load(`/explore/13`)
+  // const fetcher = useFetcher();
+  // fetcher.load(`/explore/13`)
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const {neighborhoods, currentCursor} = neighborhoodsData;
