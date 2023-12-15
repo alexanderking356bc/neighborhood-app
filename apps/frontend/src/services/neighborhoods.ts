@@ -6,8 +6,8 @@ import { getStoredUser } from '../utils/auth';
 
 const BASE_URL = '/api/neighborhoods';
 
-async function getAllNeighborhoods(): Promise<Neighborhood[]> {
-  const response = await axios.get(BASE_URL);
+async function getAllNeighborhoods(cursor: number | undefined = undefined): Promise<Neighborhood[]> {
+  const response = await axios.get(BASE_URL, {params: {cursor}});
   return response.data;
 }
 

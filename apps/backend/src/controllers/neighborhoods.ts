@@ -16,6 +16,7 @@ const neighborhoodsRouter = express.Router();
 
 // Add user authentication
 neighborhoodsRouter.get('/', catchError(async (_req: Request, res: Response) => {
+  console.log(_req.query);
   const neighborhoods = await neighborhoodServices.getAllNeighborhoods();
   res.status(200).send(neighborhoods);
 }));
