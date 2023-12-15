@@ -38,7 +38,6 @@ const isCreateNeighborhoodDataValid = async (data: CreateNeighborhoodData): Prom
  * @returns Promise resolving to array of neighborhoods
  */
 const getAllNeighborhoods = async (myCursor?: number): Promise<{neighborhoods: Neighborhood[], currentCursor: number}> => {
-  console.log(myCursor)
   const neighborhoods: Array<Neighborhood> = await prismaClient.neighborhood.findMany({
     take: 12,
     cursor: myCursor ? {

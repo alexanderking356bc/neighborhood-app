@@ -53,7 +53,7 @@ const router = createBrowserRouter([
             element: <TestPage />,
           },
           {
-            path: 'explore',
+            path: 'explore/:cursor?',
             element: <ExplorePage />,
             loader: exploreLoader,
           },
