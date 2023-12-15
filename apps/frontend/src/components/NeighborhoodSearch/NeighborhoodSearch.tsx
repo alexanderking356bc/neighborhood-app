@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { Form, Container, Row, Col } from 'react-bootstrap';
 import { Neighborhood } from '@neighborhood/backend/src/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -12,28 +11,9 @@ export default function NeighborhoodSearch({
 }: {
   neighborhoods: Neighborhood[] | null;
 }) {
-  const [neighborhoodList, setNeighborhoodList] = useState(neighborhoods);
-  const [searchTerm, setSearchTerm] = useState('');
-
-  useEffect(() => {
-    let filteredNeighborhoods = neighborhoods;
-
-    if (searchTerm !== '') {
-      filteredNeighborhoods =
-        filteredNeighborhoods?.filter((neighborhood) =>
-          neighborhood.name.toLowerCase().includes(searchTerm.toLowerCase()),
-        ) || [];
-    }
-
-    setNeighborhoodList(filteredNeighborhoods);
-  }, [neighborhoods, searchTerm]);
-
-  const searchNeighborhoods = (searchInput: string): void => {
-    setSearchTerm(searchInput);
-  };
 
   const neighborhoodBoxes =
-    neighborhoodList?.map((neighborhood: Neighborhood) => (
+    neighborhoods?.map((neighborhood: Neighborhood) => (
       <Col className="" sm="6" md="4" lg="3" key={neighborhood.id}>
         <NeighborhoodCard
           id={neighborhood.id}
@@ -54,8 +34,10 @@ export default function NeighborhoodSearch({
                   className={styles.searchInput}
                   type="text"
                   placeholder="S e a r c h"
-                  value={searchTerm}
-                  onChange={(event) => searchNeighborhoods(event.target.value)}></Form.Control>
+                  // value={searchTerm}
+                  // onChange={(event) => searchNeighborhoods(event.target.value)}
+                  >
+                  </Form.Control>
               </Form.Group>
             </Form>
           </Col>
