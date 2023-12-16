@@ -37,17 +37,28 @@ const isCreateNeighborhoodDataValid = async (data: CreateNeighborhoodData): Prom
  * fetches all neighborhoods from the db
  * @returns Promise resolving to array of neighborhoods
  */
-const getAllNeighborhoods = async (myCursor?: number): Promise<{neighborhoods: Neighborhood[], currentCursor: number}> => {
+const getAllNeighborhoods = async (myCursor?: number): Promise<{neighborhoods: Neighborhood[], currentCursor: number, hasNextPage: boolean}> => {
   const neighborhoods: Array<Neighborhood> = await prismaClient.neighborhood.findMany({
+    skip: 1,
     take: 12,
     cursor: myCursor ? {
       id: myCursor,
     } : undefined
   });
 
-  const currentCursor = neighborhoods.slice(-1)[0].id;
+  const currentCursor = neighborhoods[11].id;
 
-  return {neighborhoods, currentCursor};
+  const nextPageNhood = await prismaClient.neighborhood.findMany({
+    skip: 1,
+    take: 1, // check if there's at least one more neighborhood
+    cursor: {
+      id: currentCursor,
+    },
+  });
+
+  const hasNextPage = nextPageNhood.length > 0;
+
+  return {neighborhoods, currentCursor, hasNextPage};
 };
 
 /**
