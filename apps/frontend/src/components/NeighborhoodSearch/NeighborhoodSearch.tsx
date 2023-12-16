@@ -19,8 +19,6 @@ export default function NeighborhoodSearch({
   isNextPage: boolean;
 }) {
   const [neighborhoodList, setNeighborhoodList] = useState(neighborhoods);
-  // @ts-ignore
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [hasNextPage, setHasNextPage] = useState(isNextPage);
 
   const neighborhoodBoxes =
@@ -40,10 +38,10 @@ export default function NeighborhoodSearch({
       currentCursor: number;
       hasNextPage: boolean;
     };
+    if (neighborhoodList) {
+      setNeighborhoodList(neighborhoodList.concat(data.neighborhoods));
+    }
 
-    console.log(hasNextPage, typeof hasNextPage);
-    // @ts-ignore
-    setNeighborhoodList(neighborhoodList?.concat(data.neighborhoods));
     setHasNextPage(data.hasNextPage);
   }
 

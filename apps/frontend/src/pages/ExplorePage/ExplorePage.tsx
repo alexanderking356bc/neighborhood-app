@@ -1,5 +1,4 @@
 import { useLoaderData, LoaderFunctionArgs } from 'react-router';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Neighborhood } from '@neighborhood/backend/src/types';
 import neighborhoodsService from '../../services/neighborhoods';
 import NeighborhoodSearch from '../../components/NeighborhoodSearch/NeighborhoodSearch';
@@ -18,12 +17,7 @@ export default function ExplorePage() {
     hasNextPage: boolean;
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { neighborhoods, currentCursor, hasNextPage } = neighborhoodsData;
-
-  // const neighborhoodList = neighborhoods.map(neighborhood => (
-  //   <li key={neighborhood.id}>{neighborhood.name}</li>
-  // ));
 
   return (
     <NeighborhoodSearch
