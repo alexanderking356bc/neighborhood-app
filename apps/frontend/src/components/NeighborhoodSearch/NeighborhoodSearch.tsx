@@ -20,6 +20,7 @@ export default function NeighborhoodSearch({
 }) {
   const [neighborhoodList, setNeighborhoodList] = useState(neighborhoods);
   const [hasNextPage, setHasNextPage] = useState(isNextPage);
+  const [currentCursor, setCurrentCursor] = useState(cursor);
 
   const neighborhoodBoxes =
     neighborhoodList?.map((neighborhood: Neighborhood) => (
@@ -33,7 +34,7 @@ export default function NeighborhoodSearch({
     )) || [];
 
   async function fetchData() {
-    const data = (await neighborhoodsService.getAllNeighborhoods(cursor)) as unknown as {
+    const data = (await neighborhoodsService.getAllNeighborhoods(currentCursor)) as unknown as {
       neighborhoods: Neighborhood[];
       currentCursor: number;
       hasNextPage: boolean;
@@ -41,7 +42,7 @@ export default function NeighborhoodSearch({
     if (neighborhoodList) {
       setNeighborhoodList(neighborhoodList.concat(data.neighborhoods));
     }
-
+    setCurrentCursor(data.currentCursor);
     setHasNextPage(data.hasNextPage);
   }
 

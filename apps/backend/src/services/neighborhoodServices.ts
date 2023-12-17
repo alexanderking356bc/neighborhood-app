@@ -46,7 +46,7 @@ const getAllNeighborhoods = async (myCursor?: number): Promise<{neighborhoods: N
     } : undefined
   });
 
-  const currentCursor = neighborhoods[11].id;
+  const currentCursor = neighborhoods.slice(-1)[0].id;
 
   const nextPageNhood = await prismaClient.neighborhood.findMany({
     skip: 1,
@@ -55,6 +55,8 @@ const getAllNeighborhoods = async (myCursor?: number): Promise<{neighborhoods: N
       id: currentCursor,
     },
   });
+  console.log(currentCursor);
+  console.log(nextPageNhood);
 
   const hasNextPage = nextPageNhood.length > 0;
 
